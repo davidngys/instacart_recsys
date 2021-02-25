@@ -2,7 +2,7 @@
 ---
 
 ## Preamble
-..placeholder..
+This project looks at developing a recommender system for e-grocers based on Association Rule Mining(ARM), with the objective to develop a model that provides relevant recommendations to a customer based on a product that has been added to cart.
 
 ---
 
@@ -33,183 +33,156 @@
 ## 1. Problem Statement <a class="anchor" id="chapter1"></a>
 
 ### 1.1 Context & Motivation <a class="anchor" id="chapter1_1"></a>
-placeholder
+COVID-19 has accelerated the growth of e-commerce activities. With local e-grocers such as Redmart experiencing growth of about [4 times](https://www.cnbc.com/2020/06/02/coronavirus-singapore-online-grocery-sales-lazada.html), it has become increasingly important to be able to recommend customers relevant products to reduce churn and increase sales. 
 
+However, unlike traditional retail stores, e-grocers do not have the advantage of having taste booths, or opportunities for customers to chance upon new products while exploring down the aisles. To push products to customers, e-grocers rely on precious screen real estate to recommend products. Furthermore, due to data protection rights, e-grocers are not able to collect demographic information on their customers in order to profile and effectively target different groups. 
 
 ### 1.2 Primary & Secondary Stakeholders <a class="anchor" id="chapter1_2"></a>
 |Type|Stakeholders|Value Proposition|Problem Type|
 |:--|:--|:--|:--|
-|Primary||- <br />- ||
-|Secondary||- <br />- ||
+|Primary|Product Team|- Effectively recommend relevant products for customers<br />- Improve customer experience<br />- Reduce churn and increase sales|Business|
+|Secondary|Commercial Team|- With better understanding of customer behaviour, source for products that customers are interested in<br />- Better targeting ability with promotions|Business|
 
-### 1.3 Business Problem Statement <a class="anchor" id="chapter1_3"></a>
-placeholder.
+### 1.3 Problem Statement <a class="anchor" id="chapter1_3"></a>
+Without having demographic information, it is difficult for e-grocers to effectively identify customer groups. Unlike general e-commerce such as Shopee or Lazada, where customers do not need to build a basket of goods, e-grocers have the advantage of customers building a basket with goods coming from a mix of different categories. This provides e-grocers with data on basket mix preferences.
 
-### 1.4 Educational Problem Statement <a class="anchor" id="chapter1_4"></a>
-placeholder.
+Clustering techniques will be explored to see if customers can be effectively grouped into different categories. Based on the preferences of these different groups, a recommendation system based on association rule learning will be designed to effectively recommend relevant products to customers that are not just products that are past purchases or products within the same category, with the objective to increase sales in increasing product exposure and also improving overall customer experience.
+
 
 ## 2. Data Dictionary <a class="anchor" id="chapter2"></a>
-placeholder.
+Data used is provided by Instacart and is split into the following:
+- Aisle Data
+- Department Data
+- Order Products Data
+- Orders Data
+- Products Data
 
-### 2.1 Main Trap Data <a class="anchor" id="chapter2_1"></a>
-|Column|Data Type|Train/Test|Description|
+[Remote stored data](https://drive.google.com/drive/folders/1UOUa4Pe6hl3ARkKNuCRzoL1Ie70PJoRV)
+[Kaggle Link](https://www.kaggle.com/c/instacart-market-basket-analysis/data)
+
+### 2.1 Aisle Data <a class="anchor" id="chapter2_1"></a>
+|Column|Data Type|Description|
 |:--|:--|:--|:--|
-|`Id`|int64|Test|Index of row|
-|`Date`|object|Train/Test|Date of WNV test|
-|`Address`|object|Train/Test|Approximate location of trap (sent to GeoCoder)|
-|`Species`|object|Train/Test|Species of mosquito|
-|`Block`|int64|Train/Test|Block number of address|
-|`Street`|object|Train/Test|Street name|
-|`Trap`|object|Train/Test|Id of the trap|
-|`AddressNumberAndStreet`|object|Train/Test|Approximate address (returned from GeoCoder)|
-|`Latitude`|float64|Train/Test|Latitude (returned from GeoCoder)|
-|`Longitude`|float64|Train/Test|Longitude (returned from GeoCoder)|
-|`AddressAccuracy`|int64|Train/Test|Accuracy score (returned from GeoCoder)|
-|`NumMosquitos`|int64|Train|Number of mosquitos caught in the trap|
-|`WnvPresent`|int64|Train|1 for WNV present, 0 for no WNV|
+|`aisle_id`|int64|Unique identifier for aisle.|
+|`aisle`|object|Name of aisle.|
 
-### 2.2 Spray Data <a class="anchor" id="chapter2_2"></a>
+### 2.2 Department Data <a class="anchor" id="chapter2_2"></a>
 |Column|Data Type|Description|
 |:--|:--|:--|
-|`Date`|object|Date of spray|
-|`Time`|object|Time of spray|
-|`Latitude`|float64|Latitude of the location of the spray|
-|`Longitude`|float64|Longitude of the location of the spray|
+|`department_id`|int64|Unique identifier for department.|
+|`department`|object|Name of department.|
 
-### 2.3 Weather Data <a class="anchor" id="chapter2_3"></a>
+### 2.3 Order Products Data <a class="anchor" id="chapter2_3"></a>
 |Column|Data Type|Description|
 |:--|:--|:--|
-|`Station`|integer|Id number of the weather station|
-|`Date`|object|Date of the weather report|
-|`Tmax`|integer|Maximum temperature of the day|
-|`Tmin`|integer|Minimum temperature of the day|
-|`Tavg`|object|Average temperature of the day|
-|`Depart`|object|Difference from the normal temperature|
-|`DewPoint`|integer|Average dew point|
-|`WetBulb`|object|Average wet bulb|
-|`Heat`|object|Temperature degrees above base 65F|
-|`Cool`|object|Temperature degrees below base 65F|
-|`Sunrise`|object|Calculated sunrise|
-|`Sunset`|object|Calculated sunset|
-|`CodeSum`|object|Encoded weather pheomena|
-|`Depth`|object|Snow/ice on the ground in inches|
-|`Water1`|object|Water equivalent of Depth|
-|`SnowFall`|object|Snowfall in inches and tenths|
-|`PrecipTotal`|object|Water equivalent in inches and hundredths/rainfall and melted snow|
-|`StnPressure`|object|Average station pressure|
-|`SeaLevel`|object|Average sea level pressure|
-|`ResultSpeed`|float|Resultant wind speed|
-|`ResultDir`|integer|Resultant wind direction|
-|`AvgSpeed`|object|Average wind speed|
+|`order_id`|int64|Unique identifier of order.|
+|`product_id`|int64|Unique identifier of product.|
+|`add_to_cart_order`|int64|Quantity of product added to cart.|
+|`reordered`|int64|Boolean indicator if the order is a reordered product or not.|
+
+### 2.4 Orders Data <a class="anchor" id="chapter2_4"></a>
+|Column|Data Type|Description|
+|:--|:--|:--|
+|`order_id`|int64|Unique identifier of order.|
+|`user_id`|int64|Unique identifier of user.|
+|`order_number`|int64|Indicated the nth order of a user.|
+|`order_dow`|int64|Indicates day order was made.|
+|`days_since_prior_order`|float64|Indicates hour of the day the order was made.|
+
+### 2.5 Products Data <a class="anchor" id="chapter2_5"></a>
+|Column|Data Type|Description|
+|:--|:--|:--|
+|`product_id`|int64|Unique identifier of product.|
+|`product_name`|object|Product name.|
+|`aisle_id`|int64|Unique identifier for aisle.|
+|`department_id`|int64|Unique identifier for department.|
+
 
 ## 3. Executive Summary <a class="anchor" id="chapter3"></a>
 
 ### 3.1 Context & Initial Assumptions <a class="anchor" id="chapter3_1"></a>
-placeholder
+The data provides consumption patterns for products spread across users. Based on the data, clustering techniques will be employed to group customers and the apriori algorithm will be applied to item pairs within the clusters.
 
 ### 3.2 Data Science Process <a class="anchor" id="chapter3_2"></a>
-The target is to predict the presence of the virus, which is a binary classification problem. Classification models will be explored.
+The target is to develop a recommender system for grocery products, which is an unsupervised learning problem based on implicit data. Process to develop the system will be as follows.
 
-1. [Data Cleaning](./code/01_data_cleaning.ipynb)
- - Introduction and Problem Statement
- - Exploring the Data
- - Data Processing
-2. [Exploratory Data Analysis](./code/02_eda.ipynb)
- - WNV Distribution
- - Correlation
- - Species
- - WNV/Mosquito Seasonality
- - Traps/Mosquitos Distribution
- - Weather Trends
- - Spray Analysis
- - Location Analysis
- - EDA Conclustion and Takeaway
- - Data Processing for Model
-3. [Model Selection and Evaluation](./code/03_model_selection.ipynb)
- - Modeling Strategy
+1. [EDA](./code/01_eda.ipynb)
+ - Problem Statement
+ - Data Inspection
+ - EDA
+ - EDA Findings
+2. [Data Processing](./code/02_data_processing.ipynb)
  - Data Preparation
- - Establishing Baseline
- - Fit and Evaluate Models
- - Kaggle Submissions
- - Cost Benefit Analysis
- - Key Takeaways and Recommendations
+ - Pricipal Component Analysis (PCA)
+ - K-Means Clustering
+3. [Association Rules](./code/03_association_rules.ipynb)
+ - Association Rule Mining
+4. [Recommender](./code/04_recommender.ipynb)
+ - Defining Recommender
+ - Recommender Evaluation
+ - Conclusion
  
 ### 3.3 Key Findings <a class="anchor" id="chapter3_3"></a>
 
-#### 3.3.1 Data Cleaning
-The data collected is evaluated to be sufficient and appropriate in developing a model to predict the presence of WNV as:
-- Location details such as latitude and longitude are found in the main data set, with the corresponding labels of WNV positivity in the train data set.
-- Spray data list the locations of where sprays has been conducted and can be used to evaluate the effectiveness of sprays. However, it should not be used as a prediction feature as sprays are a measure to be used in areas that are predicted to have high possibilities of the presence of WNV.
-- Weather data provides insights to the effect of weather conditions on the spread of WNV. Certain conditions may prove to be more favourable in the spread of the virus and will be useful as prediction features.
-- Only 774 points of data were marked as having a spray within the last 14 days in a 5 mile radius
-- Weather data used will be `Tvg`, `TotalPrecip`, `DewPoint`, and a enginerred `R_Humid` datapoint, which computes the relative humidity based on precipitation and dewpoint
-- Weather data will also be rolled based on 7 days to observe the effect of past weather on a data collection point in the main data
+#### 3.3.1 EDA
+The data used consists on 3.4 million orders spread across 206k customers. These customers have all made at least 4 orders within the data set, eliminating issues with cold start. 
+![number of orders](./assets/norders.png)
 
-#### 3.3.2 Exploratory Data Analysis
-- Unbalanced distribution of classes (~95% for no virus and 5% for virus)
-- Virus only found to be in 2 species, Culex Pipiens and Culex Restuans
-![species](./assets/species_dist.png)
-- Mosquito numbers seem to be seasonal and spikes in around Aug, similar to trends of the WNV virus. However, this is expected as the higher the number of mosquitos within a trap, the more likely to detect the virus
-- Seasonality of mosquitos and virus seems to follow trend of weather, which peaks in virus. However, no significant trends can be ovserved with the relative humidity.
-![weather](./assets/weather_trends.png)
-- Some traps are more heavily sampled then others, with the top location at the O'Hare International Airport
-- No conclusive results can be drawn from the spray data regarding the effectiveness of sprays, due to limited data of sprays
-- Areas with presence of the virus tend to be clustered near each other. This is also following our expectation as mosquitos tend to have a flight radius of about 3 miles.
-![map](./assets/map_plot.png)
+Given the number of aisles, customers will be clustered based on their basket mix of products from different aisles.
+![aisle distribution](./assets/aisle_distribution.png)
 
-#### 3.3.3 Model Selection and Evaluation
-- Baseline of vanilla `Logistic Regression` model returned ROC AUC score of 0.77
-- From cross validation, `Bagged Trees`, `Random Forests` and `Adaboost` performed the best
-- However, `Decision Trees` had the least false negatives
-- After tuning hyperparameters, model that had the best ROC AUC score is `Random Forests`, with `Bagged Trees` producing the least false negatives
-- When tested on unseen data, `Random Forests` performed the best with ROC AUC score of 0.72, followed by `Bagged Trees` at 0.70
-- However, based on values in confusion matrix, `Bagged Trees` had the best cost benefit analysis
-![results](./assets/opt_model.png)
+#### 3.3.2 Data Processing
+Due to the large number of orders and aisles, Principal Component Analysis (PCA) was employed to reduce the number of features. PCA effectively reduced the number of features from 134 to 36, with 80% of the variance in the original distribution explained.
+![pca](./assets/pca.png)
+
+K-Means clustering was then used to split customers into 6 different groups.
+![pairplot](./assets/pairplot.png)
+![cluster pairplot](./assets/pairplot_cluster.png)
+
+As PCA was employed, inference on what factors were used to cluster into 6 different groups was lost. The cluster was assigned back to the original data to identify different preferences for inferential purposes.
+![aisle heatmap](./assets/aisle_heatmap)
+
+#### 3.3.3 Association Rules
+After the clusters were identified, the data was split into the different clusters and metrics from the apriori algorithm were computed for item pairs. These metrics include:
+- Support: Probability of an item pair appearing in the dataset
+- Confidence: Probability of a given item pair A & B given item A
+- Lift: Ratio of Confidence to Support
+
+The end results was item pairs from the different clusters with their corresponding apriori metrics.
+
+#### 3.3.4 Recommender
+Based on the metrics computed, the recommender pushes across products with the highest lift values when a customer adds a certain product to cart.
+
+Some results are shown.
+![eval 1](./assets/eval_1_2)
+![eval 2](./assets/eval_1_4)
 
 ## 4. Recommendations & Conclusion <a class="anchor" id="chapter4"></a>
 
-### 4.1 Addressing Business Problem <a class="anchor" id="chapter4_1"></a>
-**Optimising Resources to Curb WNV Spread**
-Typically, Type 1 errors (False Positives) are evaluated as worse than Type 2 errors (False Negatives)
-- False Positives: Predicted as has WNV but actually has no WNV
-- False Negatives: Predicted as no WNV but actually has WNV
+### 4.1 Addressing Problem Statement <a class="anchor" id="chapter4_1"></a>
+The clustering techniques can help to cluster customers into different groups based on their varying preferences for products in different aisles. Based on this cluster, the recommender also pushes across products that are closely associated based on lift values. 
 
-Based on the model, sprays will be conducted at all areas predicted as positive but no sprays at locations predicted as negatives. Therefore, a False Negative area would not be sprayed, giving rise to the mosquitos having higher opportunities to spread WNV. Areas which are False Positives would have been sprayed even though they do not have presence of the virus. This still effectively drives down the population of mosquitos which are seen as pests and provides societal benefits. 
+The products pushed may not necessarily be from the same category, which leads to increased exposure of products in varying categories. The recommender is also able to provide different recommendations to custoemrs from different clusters based on their preferences, catering for the varying preferences in each customer group.
 
-Therefore, even though `Random Forests` provides the best ROC AUC score as a prediction model, `Bagged Trees` is the best model to optimise use of resources in curbing the virus.
+Based on the results, the recommender seems to effectively provide relevant recommendations to help improve overall sales and improve customer experience.
 
-### 4.2 Addressing Education Problem <a class="anchor" id="chapter4_2"></a>
-In our EDA, it has been discovered that mosquito populations typically peak during hot seasons in Jul and Aug. However, there are no conclusive insights into the effect of relative humidity. This could be due to the nature of the data, which only spans from May to Oct of each year. Limited data on the effect of sprays also do not provide any insights into their effectiveness. It is also observed that the presence of the virus only exists within 2 of the species. This information could be useful to investigate if the virus is only capable of spreading through these 2 species of mosquitos in order to develop more measures to curb the virus.
+### 4.2 Opportunities and Next Steps <a class="anchor" id="chapter4_2"></a>
+Following this, the recommender should be put through A/B testing to properly evaluate its effectiveness, given that this is an unsupervised learning problem. Metrics used to measure success are proposed as the following:
+- Average order value
+- Average number of new items added to cart
+- Click through rate and converion of recommendations
+- Customer churn rate
 
-## 5. Limitations <a class="anchor" id="chapter5"></a>
-### 5.1 Data Collection <a class="anchor" id="chapter5_1"></a>
-The main data that is collected only spans from May to Oct of each year. Furthermore, it was discovered that certain traps were more heavily sampled compared to other traps. This could lead to certain biases being formed when analysing the data. We recommend to collect further data throughout the year if possible and also create a more even distribution of samples of traps to gain further insight into prediction methods and possible trends of the virus.
+Additionally, further opportunities can be explored in modifying the logic of the recommender to prioritise products according to specifications provided by category managers. For example, if there are certain products that have a higher margin compared to others, or products that are on sale, these products can be prioritised in order to strategically target customer groups and increase sales.
 
-### 5.2 Spray Effectiveness <a class="anchor" id="chapter5_2"></a>
-Spray data is currently limited, and no conclusive results can be drawn on the effectiveness of sprays. We recommend to collect further data to analyse the effect on sprays on the control of mosquito populations and virus trends.
+Also, clustering is currently based on aisle mix. However, EDA revealed that certain aisles have a high number of products compared to others. Densely populated aisles can be further broken down into different categories (vegetables to asian vegetables, salads etc) and less dense aisles can be combined together to help improve the clustering. Additional information such as customer order frequency or average order value can also be useful indicators in grouping customer groups.
 
-### 5.3 Cost Benefit Analysis Assumptions <a class="anchor" id="chapter5_3"></a>
-Certain assumptions were taken based on available data to compute the cost benefit analysis. If other methods are developed that can effectively help to control the spread of the virus, the assumptions should be re-evaluated in order to decide on the best classification models that help optimise cost.
+## 5. Citations <a class="anchor" id="chapter5"></a>
 
-## 6. Further Opportunities <a class="anchor" id="chapter6"></a>
-- Explore using time series models to predict, given observed seasonal trends of mosquito populations and the presence of the virus
-- Further evaluate effectivenes of sprays in order to determine best practices with regards to curbing mosquito populations (how many consecutive days, optimal time of day etc.)
+“The Instacart Online Grocery Shopping Dataset 2017”, Accessed from https://www.instacart.com/datasets/grocery-shopping-2017
 
-## 7. Citations <a class="anchor" id="chapter7"></a>
-Information on Aerial Spraying | West Nile Virus | CDC. (n.d.). CDC. https://www.cdc.gov/westnile/vectorcontrol/aerial-spraying.html#:%7E:text=Spraying%20larvicides%20kills%20mosquito%20larvae,permanently%20get%20rid%20of%20them
+Grover, P. (2020, March 31). Various implementations of collaborative filtering. Retrieved February 25, 2021, from https://towardsdatascience.com/various-implementations-of-collaborative-filtering-100385c6dfe0
 
-mosquito.org. (n.d.). Mosquito.Org. https://www.mosquito.org/page/faq#How%20fast%20can%20mosquitoes%20fly?
+Majithiya, D. (2019, November 12). Recommendation system USING association rule mining for implicit data. Retrieved February 25, 2021, from https://medium.datadriveninvestor.com/recommendation-system-using-association-rule-mining-for-implicit-data-6fba0f6c5012
 
-Lee, B. Y. (2018, September 24). West Nile Virus: How Climate Change May Be Contributing To Its Spread. Forbes. https://www.forbes.com/sites/brucelee/2018/09/16/west-nile-virus-how-climate-change-may-be-contributing-to-its-spread/?sh=797f29e93784
-
-Climate of Chicago - Description, Illinois State Climatologist Office, Illinois State Water Survey, U of I. (n.d.). State Climatologist Office for Illinois. https://www.isws.illinois.edu/statecli/general/chicago-climate-narrative.htm#:%7E:text=Chicago’s%20climate%20is%20typically%20continental,to%20be%20the%20most%20pleasant
-
-City to Spray Insecticide Thursday to Kill Mosquitoes. (2020). CDPH. https://www.chicago.gov/city/en/depts/cdph/provdrs/healthy_communities/news/2020/august/city-to-spray-insecticide-thursday-to-kill-mosquitoes.html
-
-Wikipedia contributors. (2020, December 19). Dew point. Wikipedia. https://en.wikipedia.org/wiki/Dew_point
-
-Zenivex E4 (etofenprox) | Central Mass Mosquito Control Project. (n.d.). Central Mass Mosquito Control Project. https://www.cmmcp.org/pesticide-information/pages/zenivex-e4-etofenprox
-
-Economic Cost Analysis of West Nile Virus Outbreak, Sacramento County, California, USA, 2005. (2010, March 1). PubMed Central (PMC). https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3322011/#R6
-
-Final Cumulative Maps and Data | West Nile Virus | CDC. (n.d.). CDC. https://www.cdc.gov/westnile/statsmaps/cumMapsData.html
+Association rule learning. (2021, February 16). Retrieved February 25, 2021, from https://en.wikipedia.org/wiki/Association_rule_learning#Support
