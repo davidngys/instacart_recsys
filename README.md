@@ -140,7 +140,7 @@ K-Means clustering was then used to split customers into 6 different groups.
 ![cluster pairplot](./assets/pairplot_cluster.png)
 
 As PCA was employed, inference on what factors were used to cluster into 6 different groups was lost. The cluster was assigned back to the original data to identify different preferences for inferential purposes.
-![aisle heatmap](./assets/aisle_heatmap)
+![aisle heatmap](./assets/aisle_heatmap.png)
 
 #### 3.3.3 Association Rules
 After the clusters were identified, the data was split into the different clusters and metrics from the apriori algorithm were computed for item pairs. These metrics include:
@@ -154,8 +154,8 @@ The end results was item pairs from the different clusters with their correspond
 Based on the metrics computed, the recommender pushes across products with the highest lift values when a customer adds a certain product to cart.
 
 Some results are shown.
-![eval 1](./assets/eval_1_2)
-![eval 2](./assets/eval_1_4)
+![eval 1](./assets/eval_1_2.png)
+![eval 2](./assets/eval_1_4.png)
 
 ## 4. Recommendations & Conclusion <a class="anchor" id="chapter4"></a>
 
