@@ -54,11 +54,12 @@ Data used is provided by Instacart and is split into the following:
 - Products Data
 
 [Remote stored data](https://drive.google.com/drive/folders/1UOUa4Pe6hl3ARkKNuCRzoL1Ie70PJoRV)
+
 [Kaggle Link](https://www.kaggle.com/c/instacart-market-basket-analysis/data)
 
 ### 2.1 Aisle Data <a class="anchor" id="chapter2_1"></a>
 |Column|Data Type|Description|
-|:--|:--|:--|:--|
+|:--|:--|:--|
 |`aisle_id`|int64|Unique identifier for aisle.|
 |`aisle`|object|Name of aisle.|
 
